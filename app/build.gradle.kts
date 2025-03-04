@@ -102,6 +102,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":webrtc"))
     coreLibraryDesugaring(libs.android.tools.desugar)
 
 //    implementation(libs.koin.startup)
@@ -115,6 +116,8 @@ dependencies {
     implementation(libs.processPhoenix)
 
     implementation(projects.mjpeg)
+
+    implementation(projects.webrtc)
 
     "PlayStoreImplementation"(projects.webrtc)
     "PlayStoreImplementation"(libs.play.services.tasks)
