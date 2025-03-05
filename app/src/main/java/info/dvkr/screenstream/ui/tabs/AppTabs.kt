@@ -13,7 +13,6 @@ internal enum class AppTabs(
 ) {
     STREAM(Icon_Stream, Icon_Stream, R.string.app_tab_stream),
     SETTINGS(Icon_Settings, Icons_Settings_Filled, R.string.app_tab_settings),
-    ABOUT(Icon_Info, Icon_Info_Filled, R.string.app_tab_about),
 }
 
 private val Icon_Stream: ImageVector = materialIcon(name = "Filled.Stream") {
@@ -233,56 +232,6 @@ private val Icons_Settings_Filled: ImageVector = materialIcon(name = "Filled.Set
         reflectiveCurveToRelative(1.62f, -3.6f, 3.6f, -3.6f)
         reflectiveCurveToRelative(3.6f, 1.62f, 3.6f, 3.6f)
         reflectiveCurveTo(13.98f, 15.6f, 12.0f, 15.6f)
-        close()
-    }
-}
-
-private val Icon_Info: ImageVector = materialIcon(name = "Outlined.Info") {
-    materialPath {
-        moveTo(11.0f, 7.0f)
-        horizontalLineToRelative(2.0f)
-        verticalLineToRelative(2.0f)
-        horizontalLineToRelative(-2.0f)
-        close()
-        moveTo(11.0f, 11.0f)
-        horizontalLineToRelative(2.0f)
-        verticalLineToRelative(6.0f)
-        horizontalLineToRelative(-2.0f)
-        close()
-        moveTo(12.0f, 2.0f)
-        curveTo(6.48f, 2.0f, 2.0f, 6.48f, 2.0f, 12.0f)
-        reflectiveCurveToRelative(4.48f, 10.0f, 10.0f, 10.0f)
-        reflectiveCurveToRelative(10.0f, -4.48f, 10.0f, -10.0f)
-        reflectiveCurveTo(17.52f, 2.0f, 12.0f, 2.0f)
-        close()
-        moveTo(12.0f, 20.0f)
-        curveToRelative(-4.41f, 0.0f, -8.0f, -3.59f, -8.0f, -8.0f)
-        reflectiveCurveToRelative(3.59f, -8.0f, 8.0f, -8.0f)
-        reflectiveCurveToRelative(8.0f, 3.59f, 8.0f, 8.0f)
-        reflectiveCurveToRelative(-3.59f, 8.0f, -8.0f, 8.0f)
-        close()
-    }
-}
-
-private val Icon_Info_Filled: ImageVector = materialIcon(name = "Filled.Info") {
-    materialPath {
-        moveTo(12.0f, 2.0f)
-        curveTo(6.48f, 2.0f, 2.0f, 6.48f, 2.0f, 12.0f)
-        reflectiveCurveToRelative(4.48f, 10.0f, 10.0f, 10.0f)
-        reflectiveCurveToRelative(10.0f, -4.48f, 10.0f, -10.0f)
-        reflectiveCurveTo(17.52f, 2.0f, 12.0f, 2.0f)
-        close()
-        moveTo(13.0f, 17.0f)
-        horizontalLineToRelative(-2.0f)
-        verticalLineToRelative(-6.0f)
-        horizontalLineToRelative(2.0f)
-        verticalLineToRelative(6.0f)
-        close()
-        moveTo(13.0f, 9.0f)
-        horizontalLineToRelative(-2.0f)
-        lineTo(11.0f, 7.0f)
-        horizontalLineToRelative(2.0f)
-        verticalLineToRelative(2.0f)
         close()
     }
 }

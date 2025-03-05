@@ -57,7 +57,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowWidthSizeClass
-import info.dvkr.screenstream.AdaptiveBanner
 import info.dvkr.screenstream.R
 import info.dvkr.screenstream.common.ModuleSettings
 import kotlinx.coroutines.flow.StateFlow
@@ -160,8 +159,6 @@ private fun SettingsListPane(
         }
 
         Column(modifier = Modifier.fillMaxSize()) {
-            AdaptiveBanner(modifier = Modifier.fillMaxWidth())
-
             SettingsListHeader(searchTextFlow, onSearchTextChange, titleModifier)
 
             HorizontalDivider()

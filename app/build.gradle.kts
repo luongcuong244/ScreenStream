@@ -115,8 +115,6 @@ dependencies {
     implementation(libs.androidx.compose.material3.adaptive.navigation)
     implementation(libs.processPhoenix)
 
-    implementation(projects.mjpeg)
-
     implementation(projects.webrtc)
 
     "PlayStoreImplementation"(projects.webrtc)

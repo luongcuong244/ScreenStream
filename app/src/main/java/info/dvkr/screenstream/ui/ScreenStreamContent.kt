@@ -59,13 +59,11 @@ import androidx.compose.ui.unit.toRect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessStarted
 import androidx.window.core.layout.WindowWidthSizeClass
-import info.dvkr.screenstream.AppReview
 import info.dvkr.screenstream.R
 import info.dvkr.screenstream.logger.AppLogger
 import info.dvkr.screenstream.logger.CollectingLogsUi
 import info.dvkr.screenstream.notification.NotificationPermission
 import info.dvkr.screenstream.ui.tabs.AppTabs
-import info.dvkr.screenstream.ui.tabs.about.AboutTabContent
 import info.dvkr.screenstream.ui.tabs.settings.SettingsTabContent
 import info.dvkr.screenstream.ui.tabs.stream.StreamTabContent
 import kotlinx.coroutines.flow.StateFlow
@@ -92,9 +90,6 @@ internal fun ScreenStreamContent(
             onDismissButtonClick = { updateFlowState.value?.invoke(false) }
         )
     }
-
-    val activity = LocalContext.current as Activity
-    LaunchedEffect(Unit) { AppReview.showReviewUi(activity) }
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         NotificationPermission()
@@ -171,7 +166,6 @@ private fun MainContent(
                 when (tab) {
                     AppTabs.STREAM -> StreamTabContent(contentBoundsInWindow.value, modifier = Modifier.fillMaxSize())
                     AppTabs.SETTINGS -> SettingsTabContent(contentBoundsInWindow.value, modifier = Modifier.fillMaxSize())
-                    AppTabs.ABOUT -> AboutTabContent(modifier = Modifier.fillMaxSize())
                 }
             }
         }

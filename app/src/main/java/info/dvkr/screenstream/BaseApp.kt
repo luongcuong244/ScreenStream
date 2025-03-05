@@ -63,7 +63,6 @@ public abstract class BaseApp : Application() {
         AppLogger.init(this, ::configureLogger)
 
         val defaultModule = module {
-            single(createdAtStart = true) { AdMob(get()) }
             single { NotificationHelperImpl(get()) } bind (NotificationHelper::class)
             single { AppModuleSettings() } bind (ModuleSettings::class)
             viewModel { SettingsTabViewModel(get(), get(), get()) }
