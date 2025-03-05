@@ -18,6 +18,7 @@ androidx-datastore-preferences = "1.1.1"
 
 compose-bom = "2024.12.01"
 
+legacy-support-core-utils = "1.0.0"
 process-phoenix = "3.0.0"
 xlog = "1.11.1"
 
@@ -43,6 +44,7 @@ crashlytics-gradle = "3.0.2"
 
 [libraries]
 android-tools-desugar = { module = "com.android.tools:desugar_jdk_libs", version.ref = "android-tools-desugar" }
+androidx-legacy-support-core-utils = { module = "androidx.legacy:legacy-support-core-utils", version.ref = "legacy-support-core-utils" }
 kotlinStdlibJdk8 = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
 kotlinReflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 

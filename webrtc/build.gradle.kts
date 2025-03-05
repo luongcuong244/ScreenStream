@@ -55,6 +55,8 @@ dependencies {
     implementation(libs.socket)
     implementation(libs.okio)
     implementation(libs.okhttp)
+
+    implementation(libs.androidx.legacy.support.core.utils)
 }
 
 configurations.all {

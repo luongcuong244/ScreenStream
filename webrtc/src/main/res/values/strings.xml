@@ -61,4 +61,6 @@
     <string name="webrtc_error_check_network">Please check for Internet connectivity</string>
     <string name="webrtc_notification_permission_required">Application require notifications to be enabled to start streaming service.\nPlease enable notifications in application settings.</string>
     <string name="webrtc_error_unspecified">Something went wrong. Please try again later.</string>
+
+    <string name="accessibility_service_description" translatable="false">Description of the service.</string>
 </resources>

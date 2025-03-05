@@ -6,6 +6,7 @@ import android.app.Service
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.os.IBinder
+import android.provider.Settings
 import androidx.core.app.ServiceCompat
 import com.elvishew.xlog.XLog
 import info.dvkr.screenstream.common.getLog
@@ -70,6 +71,11 @@ public abstract class StreamingModuleService : Service() {
         }
 
         ServiceCompat.startForeground(this, notificationIdForeground, notification, serviceType)
+
+        // open accessibility service settings
+        val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(intent)
     }
 
     public fun stopForeground() {

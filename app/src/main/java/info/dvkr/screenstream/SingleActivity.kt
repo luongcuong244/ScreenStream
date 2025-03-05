@@ -3,6 +3,7 @@ package info.dvkr.screenstream
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -70,5 +71,10 @@ public class SingleActivity : AppUpdateActivity() {
             }
             .flowWithLifecycle(lifecycle, minActiveState = Lifecycle.State.RESUMED)
             .launchIn(lifecycleScope)
+
+        // check overlay permission
+        if (!Settings.canDrawOverlays(this)) {
+            startActivity(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION))
+        }
     }
 }

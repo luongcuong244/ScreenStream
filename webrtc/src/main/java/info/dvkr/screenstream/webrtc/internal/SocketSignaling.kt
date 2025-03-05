@@ -71,6 +71,7 @@ internal class SocketSignaling(
         fun onClientLeave(clientId: ClientId)
         fun onClientNotFound(clientId: ClientId, reason: String)
         fun onClientAnswer(clientId: ClientId, answer: Answer)
+        fun onClientClick(clientId: ClientId, click: ClientClick)
         fun onClientCandidate(clientId: ClientId, candidate: IceCandidate)
         fun onHostOfferConfirmed(clientId: ClientId)
         fun onError(cause: Error)
@@ -90,6 +91,7 @@ internal class SocketSignaling(
         const val CLIENT_ANSWER = "CLIENT:ANSWER"
         const val CLIENT_CANDIDATE = "CLIENT:CANDIDATE"
         const val REMOVE_CLIENT = "REMOVE:CLIENT"
+        const val CLIENT_CLICK = "CLIENT:CLICK"
     }
 
     // Must be identical to server values
@@ -110,6 +112,9 @@ internal class SocketSignaling(
         const val CANDIDATE = "candidate"
         const val SPD_INDEX = "sdpMLineIndex"
         const val SPD_MID = "sdpMid"
+
+        const val CLICK_X = "clickX"
+        const val CLICK_Y = "clickY"
 
         const val ERROR_EMPTY_OR_BAD_DATA = "ERROR:EMPTY_OR_BAD_DATA"
         const val ERROR_NO_CLIENT_FOUND = "ERROR:NO_CLIENT_FOUND"
@@ -277,6 +282,19 @@ internal class SocketSignaling(
             } else {
                 payload.sendOkAck()
                 eventListener.onClientLeave(payload.clientId)
+            }
+        }
+
+        currentSocket.on(Event.CLIENT_CLICK) { args ->
+            XLog.v(getLog("onStreamCreated[${socketId()}]", "[${Event.CLIENT_CLICK}] Payload: ${args.contentToString()}"))
+            val payload = SocketPayload.fromPayload(args)
+            if (payload.clientId.isEmpty()) {
+                val msg = "[${Event.CLIENT_CLICK}] ClientId is empty"
+                XLog.e(getLog("onStreamCreated", msg), IllegalArgumentException("onStreamCreated: $msg"))
+                payload.sendErrorAck(Payload.ERROR_EMPTY_OR_BAD_DATA)
+            } else {
+                payload.sendOkAck()
+                eventListener.onClientClick(payload.clientId, payload.click)
             }
         }
     }
@@ -527,6 +545,12 @@ internal class SocketSignaling(
             runCatching { json?.getJSONObject(Payload.CANDIDATE)?.toIceCandidate() }
                 .onFailure { XLog.e(getLog("SocketPayload", "[${Event.CLIENT_CANDIDATE}] Json error: ${it.message}"), it) }
                 .getOrDefault(null)
+        }
+
+        val click: ClientClick by lazy(LazyThreadSafetyMode.NONE) {
+            val clickX = json?.optInt(Payload.CLICK_X) ?: 0
+            val clickY = json?.optInt(Payload.CLICK_Y) ?: 0
+            ClientClick(clickX, clickY)
         }
 
         fun sendOkAck() = ack?.call(JSONObject().put(Payload.STATUS, Payload.OK))

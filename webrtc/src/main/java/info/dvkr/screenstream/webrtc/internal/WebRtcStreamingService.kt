@@ -19,9 +19,11 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.os.Message
 import android.os.PowerManager
+import android.widget.Toast
 import androidx.annotation.AnyThread
 import androidx.annotation.MainThread
 import androidx.core.content.ContextCompat
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.elvishew.xlog.XLog
 import info.dvkr.screenstream.common.getLog
 import info.dvkr.screenstream.common.getVersionName
@@ -161,6 +163,11 @@ internal class WebRtcStreamingService(
         override fun onClientLeave(clientId: ClientId) {
             XLog.v(this@WebRtcStreamingService.getLog("SocketSignaling.onClientLeave", "$clientId"))
             sendEvent(WebRtcEvent.RemoveClient(clientId, false, "onClientLeave"))
+        }
+
+        override fun onClientClick(clientId: ClientId, click: ClientClick) {
+            XLog.v(this@WebRtcStreamingService.getLog("SocketSignaling.onClientClick", "$clientId"))
+            sendEvent(WebRtcEvent.ClientClick(clientId, click.x, click.y))
         }
 
         override fun onClientNotFound(clientId: ClientId, reason: String) {
@@ -860,6 +867,18 @@ internal class WebRtcStreamingService(
                 requireNotNull(signaling).sendRemoveClients(clients.map { it.value.clientId }, "CreateNewStreamPassword")
                 clients = HashMap()
                 currentStreamPassword = StreamPassword.generateNew()
+            }
+
+            is WebRtcEvent.ClientClick -> {
+                if (destroyPending) {
+                    XLog.i(getLog("ClientClick", "DestroyPending. Ignoring"), IllegalStateException("ClientClick: DestroyPending"))
+                    return
+                }
+                Toast.makeText(service, "Click: ${event.clickX}x${event.clickY}", Toast.LENGTH_SHORT).show()
+                LocalBroadcastManager.getInstance(service.applicationContext).sendBroadcast(Intent("info.dvkr.screenstream.webrtc.ClientClick").apply {
+                    putExtra("clickX", event.clickX)
+                    putExtra("clickY", event.clickY)
+                })
             }
 
             is WebRtcEvent.UpdateState -> Unit // Expected
