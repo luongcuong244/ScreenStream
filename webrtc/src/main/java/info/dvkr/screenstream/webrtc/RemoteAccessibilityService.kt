@@ -5,22 +5,29 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import android.graphics.Canvas
-import android.view.accessibility.AccessibilityEvent
+import android.graphics.PixelFormat
+import android.os.Build
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
+import android.view.accessibility.AccessibilityEvent
 import android.widget.FrameLayout
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 
 public class RemoteAccessibilityService : AccessibilityService() {
 
+    private var windowManager: WindowManager? = null
+    private var params: WindowManager.LayoutParams? = null
+
     private val clientClickReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             val clickX = intent?.getIntExtra("clickX", 0) ?: 0
             val clickY = intent?.getIntExtra("clickY", 0) ?: 0
+            Log.d("RemoteAccessibilityService", "Received click at ($clickX, $clickY)")
             drawCircle(clickX, clickY)
         }
     }
@@ -34,55 +41,75 @@ public class RemoteAccessibilityService : AccessibilityService() {
                     color = Color.RED
                     style = Paint.Style.FILL
                 }
-                val radius = 50f  // Radius of the circle
+                val radius = 15f  // Radius of the circle
                 canvas.drawCircle(x.toFloat(), y.toFloat(), radius, paint)
             }
         }
         circleView.layoutParams = FrameLayout.LayoutParams(
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.MATCH_PARENT
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.WRAP_CONTENT
         )
         return circleView
     }
 
     private fun drawCircle(x: Int, y: Int) {
-        val windowManager = applicationContext.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-
-        val params = WindowManager.LayoutParams().apply {
-            // Set the layout parameters for the overlay window
-            type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
-            flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-            width = WindowManager.LayoutParams.MATCH_PARENT
-            height = WindowManager.LayoutParams.MATCH_PARENT
-            gravity = Gravity.TOP or Gravity.LEFT
-        }
-
         val circleView = createCircleView(x, y)
-        windowManager.addView(circleView, params)
+        windowManager?.addView(circleView, params)
     }
 
     override fun onServiceConnected() {
         super.onServiceConnected()
+        Log.d("RemoteAccessibilityService", "onServiceConnected")
+
+        windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            params = WindowManager.LayoutParams(
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                        WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
+                        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
+                        WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+                        WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, // This is important to draw over status bar and bottom nav
+                PixelFormat.TRANSPARENT
+            )
+        } else {
+            params = WindowManager.LayoutParams(
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.TYPE_SYSTEM_ALERT,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                        WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
+                        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
+                        WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+                        WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                PixelFormat.TRANSPARENT
+            )
+        }
+        params?.gravity = Gravity.TOP or Gravity.LEFT
+
         val intentFilter = IntentFilter().apply {
             addAction("info.dvkr.screenstream.webrtc.ClientClick")
         }
-        LocalBroadcastManager.getInstance(applicationContext).registerReceiver(clientClickReceiver, intentFilter)
-
-        LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(Intent("info.dvkr.screenstream.webrtc.RemoteAccessibilityServiceConnected").apply {
-            putExtra("clickX", 100)
-            putExtra("clickY", 100)
-        })
+        LocalBroadcastManager.getInstance(applicationContext)
+            .registerReceiver(clientClickReceiver, intentFilter)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        Log.d("RemoteAccessibilityService", "onStartCommand")
+        params?.gravity = Gravity.TOP or Gravity.LEFT
         return super.onStartCommand(intent, flags, startId)
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
+        Log.d("RemoteAccessibilityService", "onAccessibilityEvent: ${event.toString()}")
         // No need to handle accessibility events for now
     }
 
     override fun onInterrupt() {
-        LocalBroadcastManager.getInstance(applicationContext).unregisterReceiver(clientClickReceiver)
+        Log.d("RemoteAccessibilityService", "onInterrupt")
+        LocalBroadcastManager.getInstance(applicationContext)
+            .unregisterReceiver(clientClickReceiver)
     }
 }

@@ -2,8 +2,16 @@ package info.dvkr.screenstream
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Rect
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.util.DisplayMetrics
+import android.util.Log
+import android.view.View
+import android.view.Window
+import android.view.WindowManager
+import android.view.WindowMetrics
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -26,6 +34,7 @@ import kotlinx.coroutines.flow.onStart
 import org.koin.android.ext.android.inject
 import org.koin.compose.KoinContext
 import kotlin.coroutines.cancellation.CancellationException
+
 
 public class SingleActivity : AppUpdateActivity() {
 
@@ -76,5 +85,43 @@ public class SingleActivity : AppUpdateActivity() {
         if (!Settings.canDrawOverlays(this)) {
             startActivity(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION))
         }
+
+        // get screen size
+        val metrics: WindowMetrics = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            getSystemService(
+                WindowManager::class.java
+            ).currentWindowMetrics
+        } else {
+            TODO("VERSION.SDK_INT < R")
+        }
+        val width: Int = metrics.bounds.width()
+        val height: Int = metrics.bounds.height()
+        Log.d("SingleActivity", "Full screen size: $width x $height")
+
+        // get display screen size
+        val displayMetrics = DisplayMetrics()
+        windowManager.defaultDisplay.getMetrics(displayMetrics)
+        val displayHeight = displayMetrics.heightPixels
+        val displayWidth = displayMetrics.widthPixels
+        Log.d("SingleActivity", "Display screen size: $displayWidth x $displayHeight")
+
+        // get status bar height
+        val rectangle: Rect = Rect()
+        val window = window
+        window.decorView.getWindowVisibleDisplayFrame(rectangle)
+        val statusBarHeight: Int = rectangle.top
+        val contentViewTop =
+            window.findViewById<View>(Window.ID_ANDROID_CONTENT).top
+        val titleBarHeight = contentViewTop - statusBarHeight
+        Log.d("SingleActivity", "Status bar height: $statusBarHeight")
+
+        // get navigation bar height
+        val resourceId: Int = resources.getIdentifier("navigation_bar_height", "dimen", "android")
+        val navigationBarHeight = if (resourceId > 0) {
+            resources.getDimensionPixelSize(resourceId)
+        } else {
+            0
+        }
+        Log.d("SingleActivity", "Navigation bar height: $navigationBarHeight")
     }
 }
