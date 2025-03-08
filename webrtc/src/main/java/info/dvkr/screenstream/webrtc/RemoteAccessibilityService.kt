@@ -1,6 +1,8 @@
 package info.dvkr.screenstream.webrtc
 
 import android.accessibilityservice.AccessibilityService
+import android.accessibilityservice.GestureDescription
+import android.accessibilityservice.GestureDescription.StrokeDescription
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -8,6 +10,7 @@ import android.content.IntentFilter
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.Path
 import android.graphics.PixelFormat
 import android.os.Build
 import android.util.Log
@@ -16,7 +19,9 @@ import android.view.View
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
 import android.widget.FrameLayout
+import androidx.annotation.RequiresApi
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+
 
 public class RemoteAccessibilityService : AccessibilityService() {
 
@@ -28,7 +33,10 @@ public class RemoteAccessibilityService : AccessibilityService() {
             val clickX = intent?.getIntExtra("clickX", 0) ?: 0
             val clickY = intent?.getIntExtra("clickY", 0) ?: 0
             Log.d("RemoteAccessibilityService", "Received click at ($clickX, $clickY)")
-            drawCircle(clickX, clickY)
+            // drawCircle(clickX, clickY)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                simulateClick(clickX.toFloat(), clickY.toFloat())
+            }
         }
     }
 
@@ -111,5 +119,33 @@ public class RemoteAccessibilityService : AccessibilityService() {
         Log.d("RemoteAccessibilityService", "onInterrupt")
         LocalBroadcastManager.getInstance(applicationContext)
             .unregisterReceiver(clientClickReceiver)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.N)
+    private fun simulateClick(x: Float, y: Float) {
+        // Create a Path object for the gesture
+        val path = Path()
+        path.moveTo(x, y) // Move to the (x, y) position to simulate a tap
+
+        // Build the gesture description (tap gesture)
+        val gestureBuilder = GestureDescription.Builder()
+        gestureBuilder.addStroke(StrokeDescription(path, 0, 100)) // Tap duration is 100ms
+
+        // Create the gesture description object
+        val gesture = gestureBuilder.build()
+
+        // Dispatch the gesture (this will simulate the click)
+        dispatchGesture(gesture, object : GestureResultCallback() {
+            override fun onCompleted(gestureDescription: GestureDescription) {
+                super.onCompleted(gestureDescription)
+                // Gesture completed successfully
+                // You can log or handle any actions here
+            }
+
+            override fun onCancelled(gestureDescription: GestureDescription) {
+                super.onCancelled(gestureDescription)
+                // Gesture was cancelled (e.g., if something went wrong)
+            }
+        }, null)
     }
 }

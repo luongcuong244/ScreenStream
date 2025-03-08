@@ -106,13 +106,12 @@ public class SingleActivity : AppUpdateActivity() {
         Log.d("SingleActivity", "Display screen size: $displayWidth x $displayHeight")
 
         // get status bar height
-        val rectangle: Rect = Rect()
-        val window = window
-        window.decorView.getWindowVisibleDisplayFrame(rectangle)
-        val statusBarHeight: Int = rectangle.top
-        val contentViewTop =
-            window.findViewById<View>(Window.ID_ANDROID_CONTENT).top
-        val titleBarHeight = contentViewTop - statusBarHeight
+        val statusBarResourceId: Int = resources.getIdentifier("status_bar_height", "dimen", "android")
+        val statusBarHeight = if (statusBarResourceId > 0) {
+            resources.getDimensionPixelSize(statusBarResourceId)
+        } else {
+            0
+        }
         Log.d("SingleActivity", "Status bar height: $statusBarHeight")
 
         // get navigation bar height
