@@ -548,8 +548,8 @@ internal class SocketSignaling(
         }
 
         val click: ClientClick by lazy(LazyThreadSafetyMode.NONE) {
-            val clickX = json?.optInt(Payload.CLICK_X) ?: 0
-            val clickY = json?.optInt(Payload.CLICK_Y) ?: 0
+            val clickX = json?.optDouble(Payload.CLICK_X) ?: 0.0
+            val clickY = json?.optDouble(Payload.CLICK_Y) ?: 0.0
             ClientClick(clickX, clickY)
         }
 

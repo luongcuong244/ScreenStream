@@ -43,7 +43,7 @@ internal open class WebRtcEvent(val priority: Int) {
     internal data object CreateNewPassword : WebRtcEvent(Priority.DESTROY_IGNORE)
     internal data class StartProjection(val intent: Intent) : WebRtcEvent(Priority.RECOVER_IGNORE)
     internal data class RemoveClient(val clientId: ClientId, val notifyServer: Boolean, val reason: String) : WebRtcEvent(Priority.RECOVER_IGNORE)
-    internal data class ClientClick(val clientId: ClientId, val clickX: Int, val clickY: Int) : WebRtcEvent(Priority.RECOVER_IGNORE)
+    internal data class ClientClick(val clientId: ClientId, val clickX: Double, val clickY: Double) : WebRtcEvent(Priority.RECOVER_IGNORE)
     internal data object CastPermissionsDenied : WebRtcEvent(Priority.RECOVER_IGNORE)
     internal data object UpdateState : WebRtcEvent(Priority.RECOVER_IGNORE)
 }
@@ -60,7 +60,7 @@ internal value class Answer(val description: String) {
     override fun toString(): String = "*"
 }
 
-internal class ClientClick(val x: Int, val y: Int) {
+internal class ClientClick(val x: Double, val y: Double) {
     override fun toString(): String = "($x, $y)"
 }
 

@@ -30,8 +30,8 @@ public class RemoteAccessibilityService : AccessibilityService() {
 
     private val clientClickReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            val clickX = intent?.getIntExtra("clickX", 0) ?: 0
-            val clickY = intent?.getIntExtra("clickY", 0) ?: 0
+            val clickX = intent?.getDoubleExtra("clickX", 0.0) ?: 0.0
+            val clickY = intent?.getDoubleExtra("clickY", 0.0) ?: 0.0
             Log.d("RemoteAccessibilityService", "Received click at ($clickX, $clickY)")
             // drawCircle(clickX, clickY)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
