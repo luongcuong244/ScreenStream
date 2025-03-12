@@ -72,6 +72,7 @@ internal class SocketSignaling(
         fun onClientNotFound(clientId: ClientId, reason: String)
         fun onClientAnswer(clientId: ClientId, answer: Answer)
         fun onClientClick(clientId: ClientId, click: ClientClick)
+        fun onClientSwipe(clientId: ClientId, click: ClientSwipe)
         fun onClientCandidate(clientId: ClientId, candidate: IceCandidate)
         fun onHostOfferConfirmed(clientId: ClientId)
         fun onError(cause: Error)
@@ -92,6 +93,7 @@ internal class SocketSignaling(
         const val CLIENT_CANDIDATE = "CLIENT:CANDIDATE"
         const val REMOVE_CLIENT = "REMOVE:CLIENT"
         const val CLIENT_CLICK = "CLIENT:CLICK"
+        const val CLIENT_SWIPE = "CLIENT:SWIPE"
     }
 
     // Must be identical to server values
@@ -115,6 +117,12 @@ internal class SocketSignaling(
 
         const val CLICK_X = "clickX"
         const val CLICK_Y = "clickY"
+
+        const val TOUCH_START_X = "touchStartX"
+        const val TOUCH_START_Y = "touchStartY"
+        const val TOUCH_END_X = "touchEndX"
+        const val TOUCH_END_Y = "touchEndY"
+        const val DURATION = "duration"
 
         const val ERROR_EMPTY_OR_BAD_DATA = "ERROR:EMPTY_OR_BAD_DATA"
         const val ERROR_NO_CLIENT_FOUND = "ERROR:NO_CLIENT_FOUND"
@@ -295,6 +303,19 @@ internal class SocketSignaling(
             } else {
                 payload.sendOkAck()
                 eventListener.onClientClick(payload.clientId, payload.click)
+            }
+        }
+
+        currentSocket.on(Event.CLIENT_SWIPE) { args ->
+            XLog.v(getLog("onStreamCreated[${socketId()}]", "[${Event.CLIENT_SWIPE}] Payload: ${args.contentToString()}"))
+            val payload = SocketPayload.fromPayload(args)
+            if (payload.clientId.isEmpty()) {
+                val msg = "[${Event.CLIENT_SWIPE}] ClientId is empty"
+                XLog.e(getLog("onStreamCreated", msg), IllegalArgumentException("onStreamCreated: $msg"))
+                payload.sendErrorAck(Payload.ERROR_EMPTY_OR_BAD_DATA)
+            } else {
+                payload.sendOkAck()
+                eventListener.onClientSwipe(payload.clientId, payload.swipe)
             }
         }
     }
@@ -551,6 +572,15 @@ internal class SocketSignaling(
             val clickX = json?.optDouble(Payload.CLICK_X) ?: 0.0
             val clickY = json?.optDouble(Payload.CLICK_Y) ?: 0.0
             ClientClick(clickX, clickY)
+        }
+
+        val swipe: ClientSwipe by lazy(LazyThreadSafetyMode.NONE) {
+            val touchStartX = json?.optDouble(Payload.TOUCH_START_X) ?: 0.0
+            val touchStartY = json?.optDouble(Payload.TOUCH_START_Y) ?: 0.0
+            val touchEndX = json?.optDouble(Payload.TOUCH_END_X) ?: 0.0
+            val touchEndY = json?.optDouble(Payload.TOUCH_END_Y) ?: 0.0
+            val duration = json?.optLong(Payload.DURATION) ?: 0
+            ClientSwipe(touchStartX, touchStartY, touchEndX, touchEndY, duration)
         }
 
         fun sendOkAck() = ack?.call(JSONObject().put(Payload.STATUS, Payload.OK))

@@ -30,12 +30,9 @@ public class RemoteAccessibilityService : AccessibilityService() {
 
     private val clientClickReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            val clickX = intent?.getDoubleExtra("clickX", 0.0) ?: 0.0
-            val clickY = intent?.getDoubleExtra("clickY", 0.0) ?: 0.0
-            Log.d("RemoteAccessibilityService", "Received click at ($clickX, $clickY)")
-            // drawCircle(clickX, clickY)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                simulateClick(clickX.toFloat(), clickY.toFloat())
+            when (intent?.action) {
+                "info.dvkr.screenstream.webrtc.ClientClick" -> handleClientClick(intent)
+                "info.dvkr.screenstream.webrtc.ClientSwipe" -> handleClientSwipe(intent)
             }
         }
     }
@@ -99,6 +96,7 @@ public class RemoteAccessibilityService : AccessibilityService() {
 
         val intentFilter = IntentFilter().apply {
             addAction("info.dvkr.screenstream.webrtc.ClientClick")
+            addAction("info.dvkr.screenstream.webrtc.ClientSwipe")
         }
         LocalBroadcastManager.getInstance(applicationContext)
             .registerReceiver(clientClickReceiver, intentFilter)
@@ -119,6 +117,30 @@ public class RemoteAccessibilityService : AccessibilityService() {
         Log.d("RemoteAccessibilityService", "onInterrupt")
         LocalBroadcastManager.getInstance(applicationContext)
             .unregisterReceiver(clientClickReceiver)
+    }
+
+    private  fun handleClientClick(intent: Intent?) {
+        val clickX = intent?.getDoubleExtra("clickX", 0.0) ?: 0.0
+        val clickY = intent?.getDoubleExtra("clickY", 0.0) ?: 0.0
+        Log.d("RemoteAccessibilityService", "Received click at ($clickX, $clickY)")
+        // drawCircle(clickX, clickY)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            simulateClick(clickX.toFloat(), clickY.toFloat())
+        }
+    }
+
+    private fun handleClientSwipe(intent: Intent?) {
+        val touchStartX = intent?.getDoubleExtra("touchStartX", 0.0) ?: 0.0
+        val touchStartY = intent?.getDoubleExtra("touchStartY", 0.0) ?: 0.0
+        val touchEndX = intent?.getDoubleExtra("touchEndX", 0.0) ?: 0.0
+        val touchEndY = intent?.getDoubleExtra("touchEndY", 0.0) ?: 0.0
+        val duration = intent?.getLongExtra("duration", 0L) ?: 0L
+        Log.d("RemoteAccessibilityService", "Received swipe from ($touchStartX, $touchStartY) to ($touchEndX, $touchEndY) with duration $duration")
+        // drawCircle(touchStartX, touchStartY)
+        // drawCircle(touchEndX, touchEndY)
+        // if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        //     simulateSwipe(touchStartX.toFloat(), touchStartY.toFloat(), touchEndX.toFloat(), touchEndY.toFloat(), duration)
+        // }
     }
 
     @RequiresApi(Build.VERSION_CODES.N)

@@ -170,6 +170,11 @@ internal class WebRtcStreamingService(
             sendEvent(WebRtcEvent.ClientClick(clientId, click.x, click.y))
         }
 
+        override fun onClientSwipe(clientId: ClientId, swipe: ClientSwipe) {
+            XLog.v(this@WebRtcStreamingService.getLog("SocketSignaling.onClientSwipe", "$clientId"))
+            sendEvent(WebRtcEvent.ClientSwipe(clientId, swipe.touchStartX, swipe.touchStartY, swipe.touchEndX, swipe.touchEndY, swipe.duration))
+        }
+
         override fun onClientNotFound(clientId: ClientId, reason: String) {
             XLog.v(this@WebRtcStreamingService.getLog("SocketSignaling.onClientNotFound", "$clientId"))
             sendEvent(WebRtcEvent.RemoveClient(clientId, false, reason))
@@ -878,6 +883,21 @@ internal class WebRtcStreamingService(
                 LocalBroadcastManager.getInstance(service.applicationContext).sendBroadcast(Intent("info.dvkr.screenstream.webrtc.ClientClick").apply {
                     putExtra("clickX", event.clickX)
                     putExtra("clickY", event.clickY)
+                })
+            }
+
+            is WebRtcEvent.ClientSwipe -> {
+                if (destroyPending) {
+                    XLog.i(getLog("ClientSwipe", "DestroyPending. Ignoring"), IllegalStateException("ClientSwipe: DestroyPending"))
+                    return
+                }
+                Toast.makeText(service, "Swipe: ${event.touchStartX}x${event.touchStartY} -> ${event.touchEndX}x${event.touchEndY} in ${event.duration}ms", Toast.LENGTH_SHORT).show()
+                LocalBroadcastManager.getInstance(service.applicationContext).sendBroadcast(Intent("info.dvkr.screenstream.webrtc.ClientSwipe").apply {
+                    putExtra("touchStartX", event.touchStartX)
+                    putExtra("touchStartY", event.touchStartY)
+                    putExtra("touchEndX", event.touchEndX)
+                    putExtra("touchEndY", event.touchEndY)
+                    putExtra("duration", event.duration)
                 })
             }
 

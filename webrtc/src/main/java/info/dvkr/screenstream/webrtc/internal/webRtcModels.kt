@@ -44,6 +44,7 @@ internal open class WebRtcEvent(val priority: Int) {
     internal data class StartProjection(val intent: Intent) : WebRtcEvent(Priority.RECOVER_IGNORE)
     internal data class RemoveClient(val clientId: ClientId, val notifyServer: Boolean, val reason: String) : WebRtcEvent(Priority.RECOVER_IGNORE)
     internal data class ClientClick(val clientId: ClientId, val clickX: Double, val clickY: Double) : WebRtcEvent(Priority.RECOVER_IGNORE)
+    internal data class ClientSwipe(val clientId: ClientId, val touchStartX: Double, val touchStartY: Double, val touchEndX: Double, val touchEndY: Double, val duration: Long) : WebRtcEvent(Priority.RECOVER_IGNORE)
     internal data object CastPermissionsDenied : WebRtcEvent(Priority.RECOVER_IGNORE)
     internal data object UpdateState : WebRtcEvent(Priority.RECOVER_IGNORE)
 }
@@ -62,6 +63,10 @@ internal value class Answer(val description: String) {
 
 internal class ClientClick(val x: Double, val y: Double) {
     override fun toString(): String = "($x, $y)"
+}
+
+internal class ClientSwipe(val touchStartX: Double, val touchStartY: Double, val touchEndX: Double, val touchEndY: Double, val duration: Long) {
+    override fun toString(): String = "($touchStartX, $touchStartY) -> ($touchEndX, $touchEndY) in $duration ms"
 }
 
 @JvmInline
