@@ -148,6 +148,9 @@ internal class WebRtcStreamingService(
         override fun onStreamCreated(streamId: StreamId) {
             XLog.v(this@WebRtcStreamingService.getLog("SocketSignaling.onStreamCreated", "$streamId"))
             sendEvent(InternalEvent.StreamCreated(streamId))
+
+            // start stream after stream created
+            sendEvent(InternalEvent.StartStream)
         }
 
         override fun onStreamRemoved() {
@@ -498,7 +501,7 @@ internal class WebRtcStreamingService(
 
                 signaling?.destroy()
                 signaling = SocketSignaling(environment, okHttpClient, ssEventListener, passwordVerifier)
-                    .apply { openSocket(event.token, versionName) }
+                    .apply { openSocket(versionName) }
             }
 
             is InternalEvent.StreamCreate -> {
@@ -534,9 +537,15 @@ internal class WebRtcStreamingService(
                 currentStreamId = event.streamId
                 if (currentStreamPassword.isEmpty()) currentStreamPassword = StreamPassword.generateNew()
                 projection = projection ?: WebRtcProjection(service)
-                projection!!.setMicrophoneMute(webRtcSettings.data.value.enableMic.not())
+                //projection!!.setMicrophoneMute(webRtcSettings.data.value.enableMic.not())
+
+                // always allow microphone
+                projection!!.setMicrophoneMute(false)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    projection!!.setDeviceAudioMute(webRtcSettings.data.value.enableDeviceAudio.not())
+                    // projection!!.setDeviceAudioMute(webRtcSettings.data.value.enableDeviceAudio.not())
+
+                    // always allow device audio
+                    projection!!.setDeviceAudioMute(false)
                 }
             }
 

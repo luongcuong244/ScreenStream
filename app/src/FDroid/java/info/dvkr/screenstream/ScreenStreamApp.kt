@@ -20,5 +20,5 @@ public class ScreenStreamApp : BaseApp() {
         })
     }
 
-    override val streamingModules: Array<Module> = arrayOf(CommonKoinModule, MjpegKoinModule, WebRtcKoinModule)
+    override val streamingModules: Array<Module> = arrayOf(CommonKoinModule, WebRtcKoinModule)
 }

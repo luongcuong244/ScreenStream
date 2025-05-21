@@ -144,7 +144,7 @@ internal class SocketSignaling(
     }
 
     @Throws(IllegalArgumentException::class)
-    internal fun openSocket(token: PlayIntegrityToken, gmsVersionName: String) {
+    internal fun openSocket(gmsVersionName: String) {
         XLog.d(getLog("openSocket"))
 
         require(socket == null)
@@ -153,7 +153,7 @@ internal class SocketSignaling(
         val options = IO.Options.builder()
             .setReconnection(false) //On Socket.EVENT_DISCONNECT or Socket.EVENT_CONNECT_ERROR or Event.SOCKET_ERROR. Auto or User reconnect
             .setPath(environment.socketPath).setTransports(arrayOf(WebSocket.NAME))
-            .setAuth(mapOf(Payload.WEB_SOCKET_AUTH_TOKEN to token.value, "device" to device)).build()
+            .setAuth(mapOf(Payload.WEB_SOCKET_AUTH_TOKEN to "token.value", "device" to device)).build()
             .apply { callFactory = okHttpClient; webSocketFactory = okHttpClient }
 
         socket = IO.socket(environment.signalingServerUrl, options).apply {
@@ -245,12 +245,18 @@ internal class SocketSignaling(
                 val msg = "[${Event.STREAM_JOIN}] ClientId is empty"
                 XLog.e(getLog("onStreamCreated", msg), IllegalArgumentException("onStreamCreated: $msg"))
                 payload.sendErrorAck(Payload.ERROR_EMPTY_OR_BAD_DATA)
-            } else if (passwordVerifier.isValid(payload.clientId, payload.passwordHash)) {
+//            } else if (passwordVerifier.isValid(payload.clientId, payload.passwordHash)) {
+//                payload.sendOkAck()
+//                eventListener.onClientJoin(payload.clientId, payload.iceServers)
+//            } else {
+//                XLog.w(getLog("onStreamCreated", "[${Event.STREAM_JOIN}] Wrong stream password"))
+//                payload.sendErrorAck(Payload.ERROR_WRONG_STREAM_PASSWORD)
+//            }
+
+                // don't need to check password
+            } else {
                 payload.sendOkAck()
                 eventListener.onClientJoin(payload.clientId, payload.iceServers)
-            } else {
-                XLog.w(getLog("onStreamCreated", "[${Event.STREAM_JOIN}] Wrong stream password"))
-                payload.sendErrorAck(Payload.ERROR_WRONG_STREAM_PASSWORD)
             }
         }
 
