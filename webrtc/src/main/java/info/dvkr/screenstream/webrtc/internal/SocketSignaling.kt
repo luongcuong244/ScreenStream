@@ -152,11 +152,11 @@ internal class SocketSignaling(
         val device = "${Build.MANUFACTURER}:${Build.MODEL}:API${Build.VERSION.SDK_INT}:$gmsVersionName"
         val options = IO.Options.builder()
             .setReconnection(false) //On Socket.EVENT_DISCONNECT or Socket.EVENT_CONNECT_ERROR or Event.SOCKET_ERROR. Auto or User reconnect
-            .setPath(environment.socketPath).setTransports(arrayOf(WebSocket.NAME))
+            // .setPath(environment.socketPath).setTransports(arrayOf(WebSocket.NAME))
             .setAuth(mapOf(Payload.WEB_SOCKET_AUTH_TOKEN to "token.value", "device" to device)).build()
             .apply { callFactory = okHttpClient; webSocketFactory = okHttpClient }
 
-        socket = IO.socket(environment.signalingServerUrl, options).apply {
+        socket = IO.socket(environment.signalingServerUrl + environment.socketPath, options).apply {
             on(Socket.EVENT_CONNECT) {
                 XLog.d(this@SocketSignaling.getLog(Socket.EVENT_CONNECT + "[${socketId()}]", id()))
                 eventListener.onSocketConnected()
@@ -193,13 +193,13 @@ internal class SocketSignaling(
         val currentSocket = socket ?: return
         currentSocket.connected() || return
 
-        val data = runCatching { JSONObject().put("jwt", JWTHelper.createJWT(environment, streamId.value)) }
+        val data = runCatching { JSONObject().put("requestedStreamId", streamId.value) }
             .recoverCatching {
                 JWTHelper.removeKey()
                 JWTHelper.createKey()
-                JSONObject().put("jwt", JWTHelper.createJWT(environment, streamId.value))
+                JSONObject().put("requestedStreamId", streamId.value)
             }
-            .onFailure { eventListener.onError(Error.StreamCreateError("createJWT error: ${it.message}", it)) }
+            .onFailure { eventListener.onError(Error.StreamCreateError("requestedStreamId error: ${it.message}", it)) }
             .getOrNull() ?: return
 
         currentSocket.emit(Event.STREAM_CREATE, arrayOf(data), object : AckWithTimeout(10_000) {

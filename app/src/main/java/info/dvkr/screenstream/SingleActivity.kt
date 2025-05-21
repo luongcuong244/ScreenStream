@@ -10,6 +10,7 @@ import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
 import android.view.Window
+import android.view.WindowInsets
 import android.view.WindowManager
 import android.view.WindowMetrics
 import androidx.activity.compose.setContent
@@ -87,15 +88,22 @@ public class SingleActivity : AppUpdateActivity() {
         }
 
         // get screen size
-        val metrics: WindowMetrics = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            getSystemService(
-                WindowManager::class.java
-            ).currentWindowMetrics
+        val width: Int = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val windowMetrics = windowManager.currentWindowMetrics
+            windowMetrics.bounds.width()
         } else {
-            TODO("VERSION.SDK_INT < R")
+            val displayMetrics = DisplayMetrics()
+            windowManager.defaultDisplay.getMetrics(displayMetrics);
+            displayMetrics.widthPixels
         }
-        val width: Int = metrics.bounds.width()
-        val height: Int = metrics.bounds.height()
+        val height: Int = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val windowMetrics = windowManager.currentWindowMetrics
+            windowMetrics.bounds.height()
+        } else {
+            val displayMetrics = DisplayMetrics()
+            windowManager.defaultDisplay.getMetrics(displayMetrics);
+            displayMetrics.heightPixels
+        }
         Log.d("SingleActivity", "Full screen size: $width x $height")
 
         // get display screen size

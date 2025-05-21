@@ -100,7 +100,7 @@ internal class WebRtcStreamingService(
         data object InitState : InternalEvent(Priority.RECOVER_IGNORE)
         data class GetNonce(val attempt: Int, val forceTokenUpdate: Boolean) : InternalEvent(Priority.RECOVER_IGNORE)
         data class GetToken(val nonce: String, val attempt: Int, val forceUpdate: Boolean) : InternalEvent(Priority.RECOVER_IGNORE)
-        data class OpenSocket(val token: PlayIntegrityToken) : InternalEvent(Priority.RECOVER_IGNORE)
+        data class OpenSocket(val token: String) : InternalEvent(Priority.RECOVER_IGNORE)
         data object StreamCreate : InternalEvent(Priority.RECOVER_IGNORE)
         data class StreamCreated(val streamId: StreamId) : InternalEvent(Priority.RECOVER_IGNORE)
         data class ClientJoin(val clientId: ClientId, val iceServers: List<IceServer>) : InternalEvent(Priority.RECOVER_IGNORE)
@@ -425,7 +425,8 @@ internal class WebRtcStreamingService(
                 playIntegrity.getNonce {
                     // OkHttp thread
                     if (destroyPending) return@getNonce
-                    onSuccess { nonce -> sendEvent(InternalEvent.GetToken(nonce, 0, event.forceTokenUpdate)) }
+                    //onSuccess { nonce -> sendEvent(InternalEvent.GetToken(nonce, 0, event.forceTokenUpdate)) }
+                    onSuccess { nonce -> sendEvent(InternalEvent.OpenSocket(nonce)) }
                     onFailure { cause ->
                         if (cause !is WebRtcError.NetworkError) {
                             currentError.set(WebRtcError.UnknownError(cause))
@@ -460,7 +461,7 @@ internal class WebRtcStreamingService(
                 playIntegrity.getToken(event.nonce, event.forceUpdate) {
                     // MainThread
                     if (destroyPending) return@getToken
-                    onSuccess { token -> sendEvent(InternalEvent.OpenSocket(token)) }
+                    onSuccess { token -> sendEvent(InternalEvent.OpenSocket("token")) }
                     onFailure { cause ->
                         when {
                             cause !is WebRtcError.PlayIntegrityError -> {
@@ -498,7 +499,6 @@ internal class WebRtcStreamingService(
                     XLog.i(getLog("OpenSocket", "DestroyPending. Ignoring"))
                     return
                 }
-
                 signaling?.destroy()
                 signaling = SocketSignaling(environment, okHttpClient, ssEventListener, passwordVerifier)
                     .apply { openSocket(versionName) }
@@ -510,7 +510,9 @@ internal class WebRtcStreamingService(
                     return
                 }
 
-                val currentStreamId = StreamId(webRtcSettings.data.value.lastStreamId)
+                //val currentStreamId = StreamId(webRtcSettings.data.value.lastStreamId)
+                // 001 is device id
+                val currentStreamId = StreamId("001")
                 requireNotNull(signaling).sendStreamCreate(currentStreamId)
             }
 
