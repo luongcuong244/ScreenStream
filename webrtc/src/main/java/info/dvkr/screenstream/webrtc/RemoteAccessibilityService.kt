@@ -37,6 +37,11 @@ public class RemoteAccessibilityService : AccessibilityService() {
         }
     }
 
+    override fun onCreate() {
+        super.onCreate()
+        Log.d("RemoteAccessibilityService", "onCreate")
+    }
+
     // Create a custom View to draw a red circle
     private fun createCircleView(x: Int, y: Int): View {
         val circleView = object : View(applicationContext) {
