@@ -12,6 +12,7 @@ import info.dvkr.screenstream.logger.AppLogger
 import info.dvkr.screenstream.notification.NotificationHelperImpl
 import info.dvkr.screenstream.ui.tabs.settings.SettingsTabViewModel
 import info.dvkr.screenstream.ui.tabs.settings.app.AppModuleSettings
+import info.dvkr.screenstream.webrtc.utils.AppSettingUtils
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
@@ -27,6 +28,8 @@ public abstract class BaseApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
+
+        AppSettingUtils.getBaseUrl(this)
 
         if (ProcessPhoenix.isPhoenixProcess(this)) return
 
