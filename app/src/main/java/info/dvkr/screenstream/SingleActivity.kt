@@ -13,6 +13,7 @@ import android.view.Window
 import android.view.WindowInsets
 import android.view.WindowManager
 import android.view.WindowMetrics
+import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -50,6 +51,15 @@ public class SingleActivity : AppUpdateActivity() {
         installSplashScreen()
         XLog.d(this@SingleActivity.getLog("onCreate", "Bug workaround: ${window.decorView}"))
         super.onCreate(savedInstanceState)
+
+        val deviceId = intent.getStringExtra("deviceId")
+        if (deviceId != null) {
+            Toast.makeText(
+                this,
+                "Open from MDM app with device ID: $deviceId",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
 
         setContent {
             KoinContext {
