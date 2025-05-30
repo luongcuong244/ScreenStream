@@ -31,6 +31,7 @@ import info.dvkr.screenstream.webrtc.WebRtcModuleService
 import info.dvkr.screenstream.webrtc.settings.WebRtcSettings
 import info.dvkr.screenstream.webrtc.ui.WebRtcError
 import info.dvkr.screenstream.webrtc.ui.WebRtcState
+import info.dvkr.screenstream.webrtc.utils.PreferenceUtils
 import kotlinx.coroutines.CompletableJob
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -512,8 +513,15 @@ internal class WebRtcStreamingService(
 
                 //val currentStreamId = StreamId(webRtcSettings.data.value.lastStreamId)
                 // 001 is device id
-                val currentStreamId = StreamId("001")
-                requireNotNull(signaling).sendStreamCreate(currentStreamId)
+                val deviceId = PreferenceUtils.getInstance(service).getDeviceId()
+                if (deviceId != null) {
+                    Toast.makeText(service, "Creating stream for device ID: $deviceId", Toast.LENGTH_SHORT).show()
+                    val currentStreamId = StreamId(deviceId)
+                    requireNotNull(signaling).sendStreamCreate(currentStreamId)
+                } else {
+                    XLog.w(getLog("StreamCreate", "Device ID is null. Cannot create stream"))
+                    return
+                }
             }
 
             is InternalEvent.StreamCreated -> {

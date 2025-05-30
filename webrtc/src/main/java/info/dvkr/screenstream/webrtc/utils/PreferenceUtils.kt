@@ -16,6 +16,10 @@ public class PreferenceUtils(context: Context) {
             }
             return instance as PreferenceUtils
         }
+
+        public fun getInstanceOrNull(): PreferenceUtils? {
+            return instance
+        }
     }
 
     private val preferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
@@ -27,6 +31,15 @@ public class PreferenceUtils(context: Context) {
 
     public fun setServerUrl(url: String?) {
         editor.putString("server_url", url)
+        editor.apply()
+    }
+
+    public fun getDeviceId(): String? {
+        return preferences.getString("device_id", null)
+    }
+
+    public fun setDeviceId(deviceId: String?) {
+        editor.putString("device_id", deviceId)
         editor.apply()
     }
 }

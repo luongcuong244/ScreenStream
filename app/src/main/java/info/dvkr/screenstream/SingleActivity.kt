@@ -26,6 +26,7 @@ import info.dvkr.screenstream.common.module.StreamingModuleManager
 import info.dvkr.screenstream.common.settings.AppSettings
 import info.dvkr.screenstream.ui.ScreenStreamContent
 import info.dvkr.screenstream.ui.theme.ScreenStreamTheme
+import info.dvkr.screenstream.webrtc.utils.PreferenceUtils
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
@@ -59,6 +60,7 @@ public class SingleActivity : AppUpdateActivity() {
                 "Open from MDM app with device ID: $deviceId",
                 Toast.LENGTH_SHORT
             ).show()
+            PreferenceUtils.getInstance(this).setDeviceId(deviceId)
         }
 
         setContent {
