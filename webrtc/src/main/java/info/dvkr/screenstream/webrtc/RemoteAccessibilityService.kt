@@ -143,35 +143,43 @@ public class RemoteAccessibilityService : AccessibilityService() {
         Log.d("RemoteAccessibilityService", "Received swipe from ($touchStartX, $touchStartY) to ($touchEndX, $touchEndY) with duration $duration")
         // drawCircle(touchStartX, touchStartY)
         // drawCircle(touchEndX, touchEndY)
-        // if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        //     simulateSwipe(touchStartX.toFloat(), touchStartY.toFloat(), touchEndX.toFloat(), touchEndY.toFloat(), duration)
-        // }
+         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+             simulateSwipe(touchStartX.toFloat(), touchStartY.toFloat(), touchEndX.toFloat(), touchEndY.toFloat(), duration)
+         }
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
     private fun simulateClick(x: Float, y: Float) {
-        // Create a Path object for the gesture
         val path = Path()
-        path.moveTo(x, y) // Move to the (x, y) position to simulate a tap
+        path.moveTo(x, y)
+        // simulate a short press/tap
+        simulateGesture(path, 0, 100)
+    }
 
-        // Build the gesture description (tap gesture)
+    @RequiresApi(Build.VERSION_CODES.N)
+    private fun simulateSwipe(startX: Float, startY: Float, endX: Float, endY: Float, duration: Long) {
+        val path = Path()
+        path.moveTo(startX, startY)
+        path.lineTo(endX, endY) // Add additional points here for more complex paths if needed
+        simulateGesture(path, 0, duration)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.N)
+    private fun simulateGesture(path: Path, startTime: Long, duration: Long) {
         val gestureBuilder = GestureDescription.Builder()
-        gestureBuilder.addStroke(StrokeDescription(path, 0, 100)) // Tap duration is 100ms
+        gestureBuilder.addStroke(StrokeDescription(path, startTime, duration))
 
-        // Create the gesture description object
         val gesture = gestureBuilder.build()
 
-        // Dispatch the gesture (this will simulate the click)
         dispatchGesture(gesture, object : GestureResultCallback() {
             override fun onCompleted(gestureDescription: GestureDescription) {
                 super.onCompleted(gestureDescription)
-                // Gesture completed successfully
-                // You can log or handle any actions here
+                Log.d("RemoteAccessibilityService", "Gesture completed successfully.")
             }
 
             override fun onCancelled(gestureDescription: GestureDescription) {
                 super.onCancelled(gestureDescription)
-                // Gesture was cancelled (e.g., if something went wrong)
+                Log.d("RemoteAccessibilityService", "Gesture was cancelled.")
             }
         }, null)
     }
