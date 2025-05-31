@@ -128,52 +128,52 @@ internal fun StreamCard(
                 }
             }
 
-            Row(
-                modifier = Modifier.padding(start = 12.dp).fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                val interactionSource = remember { MutableInteractionSource() }
-                val isPressed = interactionSource.collectIsPressedAsState()
-                val text = if (webRtcState.value.isStreaming.not() || isPressed.value) webRtcState.value.streamPassword else "*"
+//            Row(
+//                modifier = Modifier.padding(start = 12.dp).fillMaxWidth(),
+//                verticalAlignment = Alignment.CenterVertically
+//            ) {
+//                val interactionSource = remember { MutableInteractionSource() }
+//                val isPressed = interactionSource.collectIsPressedAsState()
+//                val text = if (webRtcState.value.isStreaming.not() || isPressed.value) webRtcState.value.streamPassword else "*"
+//
+//                Text(
+//                    text = stringResource(id = R.string.webrtc_stream_stream_password, text)
+//                        .stylePlaceholder(text, SpanStyle(fontWeight = FontWeight.Bold, fontFamily = RobotoMonoBold)),
+//                    modifier = Modifier.weight(1F)
+//                )
+//
+//                Crossfade(
+//                    targetState = webRtcState.value.isStreaming,
+//                    label = "StreamPasswordButtonCrossfade"
+//                ) { isStreaming ->
+//                    if (isStreaming) {
+//                        IconButton(onClick = { }, interactionSource = interactionSource) {
+//                            Icon(
+//                                imageVector = Icon_Visibility,
+//                                contentDescription = stringResource(id = R.string.webrtc_stream_description_show_password)
+//                            )
+//                        }
+//                    } else {
+//                        IconButton(onClick = onCreateNewPassword) {
+//                            Icon(
+//                                imageVector = Icon_Refresh,
+//                                contentDescription = stringResource(id = R.string.webrtc_stream_description_create_password)
+//                            )
+//                        }
+//                    }
+//                }
+//            }
 
-                Text(
-                    text = stringResource(id = R.string.webrtc_stream_stream_password, text)
-                        .stylePlaceholder(text, SpanStyle(fontWeight = FontWeight.Bold, fontFamily = RobotoMonoBold)),
-                    modifier = Modifier.weight(1F)
-                )
-
-                Crossfade(
-                    targetState = webRtcState.value.isStreaming,
-                    label = "StreamPasswordButtonCrossfade"
-                ) { isStreaming ->
-                    if (isStreaming) {
-                        IconButton(onClick = { }, interactionSource = interactionSource) {
-                            Icon(
-                                imageVector = Icon_Visibility,
-                                contentDescription = stringResource(id = R.string.webrtc_stream_description_show_password)
-                            )
-                        }
-                    } else {
-                        IconButton(onClick = onCreateNewPassword) {
-                            Icon(
-                                imageVector = Icon_Refresh,
-                                contentDescription = stringResource(id = R.string.webrtc_stream_description_create_password)
-                            )
-                        }
-                    }
-                }
-            }
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.End
-            ) {
-                OpenInBrowserButton(fullAddress)
-                CopyAddressButton(fullAddress)
-                ShareAddressButton(fullAddress)
-                ShowQRCodeButton(fullAddress)
-            }
+//            Row(
+//                modifier = Modifier.fillMaxWidth(),
+//                verticalAlignment = Alignment.CenterVertically,
+//                horizontalArrangement = Arrangement.End
+//            ) {
+//                OpenInBrowserButton(fullAddress)
+//                CopyAddressButton(fullAddress)
+//                ShareAddressButton(fullAddress)
+//                ShowQRCodeButton(fullAddress)
+//            }
         }
     }
 }
