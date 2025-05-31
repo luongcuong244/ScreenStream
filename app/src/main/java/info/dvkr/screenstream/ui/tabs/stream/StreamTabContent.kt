@@ -54,32 +54,32 @@ internal fun StreamTabContent( //TODO Add foldable support
     val activeModule = streamingModulesManager.activeModuleStateFlow.collectAsStateWithLifecycle()
 
     Column(modifier = modifier) {
-        val with = with(LocalDensity.current) { boundsInWindow.width.toDp() }
-        if (with >= 800.dp) {
-            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Column(modifier = Modifier.weight(1F), verticalArrangement = Arrangement.Center) {
-                    StreamingModuleSelector(
-                        streamingModulesManager = streamingModulesManager,
-                        modifier = Modifier
-                            .padding(top = 8.dp, start = 16.dp, end = 8.dp, bottom = 8.dp)
-                            .fillMaxWidth()
-                    )
-                }
-                Column(modifier = Modifier.weight(1F)) {
-                    AdaptiveBanner(modifier = Modifier.fillMaxWidth())
-                }
-            }
-        } else {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                StreamingModuleSelector(
-                    streamingModulesManager = streamingModulesManager,
-                    modifier = Modifier
-                        .padding(top = 8.dp, start = 16.dp, end = 16.dp, bottom = 8.dp)
-                        .fillMaxWidth()
-                )
-                AdaptiveBanner(modifier = Modifier.fillMaxWidth())
-            }
-        }
+//        val with = with(LocalDensity.current) { boundsInWindow.width.toDp() }
+//        if (with >= 800.dp) {
+//            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+//                Column(modifier = Modifier.weight(1F), verticalArrangement = Arrangement.Center) {
+//                    StreamingModuleSelector(
+//                        streamingModulesManager = streamingModulesManager,
+//                        modifier = Modifier
+//                            .padding(top = 8.dp, start = 16.dp, end = 8.dp, bottom = 8.dp)
+//                            .fillMaxWidth()
+//                    )
+//                }
+//                Column(modifier = Modifier.weight(1F)) {
+//                    AdaptiveBanner(modifier = Modifier.fillMaxWidth())
+//                }
+//            }
+//        } else {
+//            Column(modifier = Modifier.fillMaxWidth()) {
+//                StreamingModuleSelector(
+//                    streamingModulesManager = streamingModulesManager,
+//                    modifier = Modifier
+//                        .padding(top = 8.dp, start = 16.dp, end = 16.dp, bottom = 8.dp)
+//                        .fillMaxWidth()
+//                )
+//                AdaptiveBanner(modifier = Modifier.fillMaxWidth())
+//            }
+//        }
         activeModule.value?.StreamUIContent(modifier = Modifier.fillMaxSize())
     }
 }

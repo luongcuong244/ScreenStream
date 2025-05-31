@@ -1,10 +1,12 @@
 package info.dvkr.screenstream.webrtc.ui
 
 import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
@@ -47,7 +49,7 @@ internal fun WebRtcMainScreenUI(
 ) {
     val webRtcState = webRtcStateFlow.collectAsStateWithLifecycle()
 
-    BoxWithConstraints(modifier = modifier) {
+    BoxWithConstraints(modifier = modifier.padding(vertical = 50.dp)) {
         MediaProjectionPermission(
             shouldRequestPermission = webRtcState.value.waitingCastPermission,
             onPermissionGranted = { intent -> if (webRtcState.value.waitingCastPermission) sendEvent(WebRtcEvent.StartProjection(intent)) },
@@ -59,7 +61,7 @@ internal fun WebRtcMainScreenUI(
         val lazyVerticalStaggeredGridState = rememberLazyStaggeredGridState()
         LazyVerticalStaggeredGrid(
             columns = StaggeredGridCells.Fixed(if (maxWidth >= 800.dp) 2 else 1),
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().padding(vertical = 50.dp),
             state = lazyVerticalStaggeredGridState,
             contentPadding = PaddingValues(start = 8.dp, end = 8.dp, bottom = 64.dp),
         ) {
@@ -78,12 +80,12 @@ internal fun WebRtcMainScreenUI(
                 )
             }
 
-            item(key = "AUDIO") {
-                AudioCard(
-                    webRtcState = webRtcState,
-                    modifier = Modifier.padding(8.dp)
-                )
-            }
+//            item(key = "AUDIO") {
+//                AudioCard(
+//                    webRtcState = webRtcState,
+//                    modifier = Modifier.padding(8.dp)
+//                )
+//            }
 
             item(key = "CLIENTS") {
                 ClientsCard(

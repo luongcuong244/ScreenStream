@@ -125,56 +125,57 @@ private fun MainContent(
         color = NavigationSuiteScaffoldDefaults.containerColor,
         contentColor = NavigationSuiteScaffoldDefaults.contentColor
     ) {
-        NavigationSuiteScaffoldLayout(
-            navigationSuite = {
-                when (layoutType) {
-                    NavigationSuiteType.NavigationBar -> NavigationBar {
-                        AppTabs.entries.forEach { tab ->
-                            NavigationBarItem(
-                                selected = selectedTab.value == tab,
-                                onClick = dropUnlessStarted { selectedTab.value = tab },
-                                icon = { Icon(imageVector = if (selectedTab.value == tab) tab.iconSelected else tab.icon, null) },
-                                modifier = Modifier.padding(horizontal = 4.dp),
-                                label = { Text(text = stringResource(tab.label)) },
-                            )
-                        }
-                    }
-
-                    NavigationSuiteType.NavigationRail -> NavigationRail {
-                        Spacer(Modifier.weight(0.5f))
-                        AppTabs.entries.forEach { tab ->
-                            NavigationRailItem(
-                                selected = selectedTab.value == tab,
-                                onClick = dropUnlessStarted { selectedTab.value = tab },
-                                icon = { Icon(imageVector = if (selectedTab.value == tab) tab.iconSelected else tab.icon, null) },
-                                modifier = Modifier.padding(vertical = 4.dp),
-                                label = { Text(text = stringResource(tab.label)) }
-                            )
-                        }
-                        Spacer(Modifier.weight(1f))
-                    }
-
-                    else -> throw UnsupportedOperationException("Unsupported NavigationSuiteType: $layoutType")
-                }
-            },
-            layoutType = layoutType
-        ) {
-            AnimatedContent(
-                targetState = selectedTab.value,
-                modifier = Modifier.onPlaced { contentBoundsInWindow.value = it.boundsInWindow() },
-                transitionSpec = {
-                    fadeIn(animationSpec = tween(300, delayMillis = 90, easing = EaseIn))
-                        .togetherWith(fadeOut(animationSpec = tween(150, easing = EaseOut)))
-                },
-                label = "TabContent"
-            ) { tab ->
-                when (tab) {
-                    AppTabs.STREAM -> StreamTabContent(contentBoundsInWindow.value, modifier = Modifier.fillMaxSize())
-                    AppTabs.SETTINGS -> SettingsTabContent(contentBoundsInWindow.value, modifier = Modifier.fillMaxSize())
-                    AppTabs.ABOUT -> AboutTabContent(modifier = Modifier.fillMaxSize())
-                }
-            }
-        }
+        StreamTabContent(contentBoundsInWindow.value, modifier = Modifier.fillMaxSize())
+//        NavigationSuiteScaffoldLayout(
+//            navigationSuite = {
+//                when (layoutType) {
+//                    NavigationSuiteType.NavigationBar -> NavigationBar {
+//                        AppTabs.entries.forEach { tab ->
+//                            NavigationBarItem(
+//                                selected = selectedTab.value == tab,
+//                                onClick = dropUnlessStarted { selectedTab.value = tab },
+//                                icon = { Icon(imageVector = if (selectedTab.value == tab) tab.iconSelected else tab.icon, null) },
+//                                modifier = Modifier.padding(horizontal = 4.dp),
+//                                label = { Text(text = stringResource(tab.label)) },
+//                            )
+//                        }
+//                    }
+//
+//                    NavigationSuiteType.NavigationRail -> NavigationRail {
+//                        Spacer(Modifier.weight(0.5f))
+//                        AppTabs.entries.forEach { tab ->
+//                            NavigationRailItem(
+//                                selected = selectedTab.value == tab,
+//                                onClick = dropUnlessStarted { selectedTab.value = tab },
+//                                icon = { Icon(imageVector = if (selectedTab.value == tab) tab.iconSelected else tab.icon, null) },
+//                                modifier = Modifier.padding(vertical = 4.dp),
+//                                label = { Text(text = stringResource(tab.label)) }
+//                            )
+//                        }
+//                        Spacer(Modifier.weight(1f))
+//                    }
+//
+//                    else -> throw UnsupportedOperationException("Unsupported NavigationSuiteType: $layoutType")
+//                }
+//            },
+//            layoutType = layoutType
+//        ) {
+//            AnimatedContent(
+//                targetState = selectedTab.value,
+//                modifier = Modifier.onPlaced { contentBoundsInWindow.value = it.boundsInWindow() },
+//                transitionSpec = {
+//                    fadeIn(animationSpec = tween(300, delayMillis = 90, easing = EaseIn))
+//                        .togetherWith(fadeOut(animationSpec = tween(150, easing = EaseOut)))
+//                },
+//                label = "TabContent"
+//            ) { tab ->
+//                when (tab) {
+//                    AppTabs.STREAM -> StreamTabContent(contentBoundsInWindow.value, modifier = Modifier.fillMaxSize())
+//                    AppTabs.SETTINGS -> SettingsTabContent(contentBoundsInWindow.value, modifier = Modifier.fillMaxSize())
+//                    AppTabs.ABOUT -> AboutTabContent(modifier = Modifier.fillMaxSize())
+//                }
+//            }
+//        }
     }
 
     val view = LocalView.current
